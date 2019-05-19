@@ -3,9 +3,9 @@ const express = require('express')
 const session = require('express-session')
 const MongoStore = require('connect-mongo')(session)
 const flash = require('connect-flash')
-const config = require('config-lite')(__dirname)
+const config = require('config-lite')(__dirname) // 解析config資料夾用
 const routes = require('./routes')
-const pkg = require('./package')
+const pkg = require('./package') // 讀取package.json用
 const engine = require('ejs-mate')
 
 const app = express()
@@ -36,10 +36,16 @@ app.use(session({
 // flash 中间件，用来显示通知
 app.use(flash())
 
+// 處理表單及文件上傳的中間件
+app.use(require('express-formidable')({
+  uploadDir: path.join(__dirname, 'public.img'), // 上傳文件目錄
+  keepExtensions: true // 保留後綴
+}))
+
 // 設置模板全域常量
 app.locals.blog = {
-  title: pkg.name,
-  description: pkg.description
+  title: pkg.name, // UI畫面的標題
+  description: pkg.description // UI畫面的描述
 }
 
 // 添加模板必須的三個變量
